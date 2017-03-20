@@ -2,30 +2,29 @@
 # -*- coding: utf-8 -*-
 # Author: Morrow
 import json
-import urllib
 import requests
 import random
 import md5
-import time
 import threading
 from Tkinter import *
 from ScrolledText import ScrolledText
 try:
     from tkinter import ttk
-    # reload(sys)
-    # sys.setdefaultencoding('utf-8')
 except ImportError:
     import ttk
-
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+'''原谅我这个新手不仅代码写的差，英语还抠脚
+   appid和secretkey得在百度翻译api平台申请
+   Appid and secretkey have to apply in the Baidu translation API platform
+'''
 
 def connect_baiduapi():
-    httpClient = None
     url = ' http://api.fanyi.baidu.com/api/trans/vip/translate'
-    appid = '20170319000042596' #your appid
-    secretKey = 'ngZhXsybngHjSvEd9L0r' #your secretkey
-    q = from_text.get('1.0',END).strip()
-    print q
-    print 'get q'
+    appid = 'your appid' # 你申请的appid
+    secretKey = 'your secretKey' #百度api发给你的密钥
+    q = str(from_text.get('1.0',END)).strip()
     fromlang = lang_from.get().split('-')[1]
     tolang = lang_to.get().split('-')[1]
     salt = random.randint(32768, 65536)
@@ -33,16 +32,13 @@ def connect_baiduapi():
     m1 = md5.new()
     m1.update(sign)
     sign = m1.hexdigest()
-    params = {'appid':appid,'q':urllib.quote(q),'from':fromlang,'to':tolang,
+    params = {'appid':appid,'q':q,'from':fromlang,'to':tolang,
                               'salt':str(salt),'sign':sign}
     try:
         r = requests.get(url,params)
-        print r.url
         r.raise_for_status()
         r.encoding = r.apparent_encoding
         content = json.loads(r.text)
-        print content
-        print content['trans_result']
         if content['trans_result'][0]['dst']:
             dst = content['trans_result'][0]['dst']
             to_text.delete('1.0', END)
@@ -58,7 +54,7 @@ def translate_GUI():
     lang_from = StringVar()
     Label(root,font=('微软雅黑',11),text='选择语言:').grid(row=0,column=0,sticky=N)
     lang_from_list = ttk.Combobox(root,width=5,textvariable=lang_from)
-    lang_from_list['values'] = ('自动检测-auto','中文-zh','英语-en','粤语-yue','文言文-wyw','日语jp',
+    lang_from_list['values'] = ('自动检测-auto','中文-zh','英语-en','粤语-yue','文言文-wyw','日语-jp',
                            '韩语-kor','法语-fra','西班牙语-spa','泰语-th','阿拉伯语-ara',
                            '俄语-ru','葡萄牙语-pt','德语-de','意大利语-it','希腊语-el',
                            '荷兰语-nl','波兰语-pl','保加利亚语-bul','爱沙尼亚语-est',
@@ -86,11 +82,36 @@ def translate_GUI():
     clear_button = Button(root,font=('微软雅黑',11),width=2,text='清屏',command=lambda :clear())
     clear_button.grid(row=5,column=3,ipadx=5)
 
+    en_to_zh = Button(root,font=('微软雅黑',11),width=2,text='英译汉',command=lambda : en2zh())
+    en_to_zh.grid(row=5,column=0,ipadx=5)
+
+    zh_to_en = Button(root,font=('微软雅黑',11),width=2,text='汉译英',command=lambda : zh2en())
+    zh_to_en.grid(row=5,column=1,ipadx=5)
     root.mainloop()
+
+
+def en2zh():
+    lang_from.set('英语-en')
+    lang_to.set('中文-zh')
+    th = threading.Thread(target=connect_baiduapi)
+    th.start()
+
+
+def zh2en():
+    lang_guess = str(from_text.get('1.0', END)).strip()
+    if lang_guess >= u'\u4e00' and lang_guess <= u'\u9fa5':
+        lang_from.set('中文-zh')
+        lang_to.set('英语-en')
+    else:
+        lang_from.set('自动检测-auto')
+        lang_to.set('英语-en')
+    th = threading.Thread(target=connect_baiduapi)
+    th.start()
 
 def clear():
     from_text.delete('1.0',END)
     to_text.delete('1.0',END)
+    lang_from.set('自动检测-auto')
 
 def start():
     th = threading.Thread(target=connect_baiduapi)
