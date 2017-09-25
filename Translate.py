@@ -15,7 +15,7 @@ except ImportError:
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-'''原谅我这个新手不仅代码写的差，英语还抠脚
+'''
    appid和secretkey得在百度翻译api平台申请
    Appid and secretkey have to apply in the Baidu translation API platform
 '''
