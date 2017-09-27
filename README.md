@@ -1,1 +1,1 @@
-# Translate_GUI是调用百度翻译API来制作的桌面GUI
+# Python Tkinter制作的桌面GUI
