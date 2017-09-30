@@ -97,7 +97,7 @@ def start():
 
 def main():
     root = Tk()
-    root.title('Check-Check V_1.8.1    Author:莫罗')  # 标题嘻嘻     lol
+    root.title('Check-Check V_1.8.1    Author:莫罗')  # 标题
     # root.iconbitmap('ICON\\tubiao.ico')  # logo
     root.geometry('435x580+400+120')  # 窗口坐标 大小用x,坐标用+
 
@@ -149,7 +149,7 @@ def main():
         days=14), localdate + datetime.timedelta(days=15), localdate + datetime.timedelta(days=16),
         localdate + datetime.timedelta(days=17), localdate + datetime.timedelta(
         days=18), localdate + datetime.timedelta(days=19), localdate + datetime.timedelta(days=20))
-    # 设置下拉列表时间参数
+    # 读取本地时间设置下拉列表时间参数
     calendar.grid(row=2, column=1, sticky=W, ipadx=18)
     calendar.set(localdate)  # 默认日期当日本地时间
 
