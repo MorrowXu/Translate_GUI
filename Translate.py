@@ -33,8 +33,13 @@ def connect_baiduapi():
     m1 = md5.new()
     m1.update(sign)
     sign = m1.hexdigest()
-    params = {'appid': appid, 'q': q, 'from': fromlang, 'to': tolang,
-                              'salt': str(salt), 'sign': sign}
+    params = {
+              'appid': appid, 
+              'q': q, 
+              'from': fromlang, 
+              'to': tolang,
+              'salt': str(salt), 
+              'sign': sign}
     try:
         r = requests.get(url, params)
         r.raise_for_status()
@@ -52,17 +57,10 @@ def translate_GUI():
     root = Tk()
     root.title('Easy_translate   Author:Morrow')
     root.geometry('480x245+800+320')
+    
     global lang_from
     lang_from = StringVar()
-    Label(
-        root,
-        font=(
-            '微软雅黑',
-            11),
-        text='选择语言:').grid(
-            row=0,
-            column=0,
-        sticky=N)
+    Label(root, font=('微软雅黑', 11), text='选择语言:').grid(row=0, column=0,sticky=N)
     lang_from_list = ttk.Combobox(root, width=5, textvariable=lang_from)
     lang_from_list['values'] = ('自动检测-auto', '中文-zh', '英语-en', '粤语-yue',
                                 '文言文-wyw', '日语-jp','韩语-kor','法语-fra',
@@ -74,80 +72,32 @@ def translate_GUI():
                                 '越南语-vie')
     lang_from_list.grid(row=0, column=1, sticky=N, ipadx=20)
     lang_from_list.set('自动检测-auto')
+    
     global lang_to
     lang_to = StringVar()
-    Label(
-        root,
-        font=(
-            '微软雅黑',
-            11),
-        text='译后语言:').grid(
-            row=0,
-            column=3,
-        sticky=N)
+    Label(root,font=('微软雅黑', 11),text='译后语言:').grid(row=0,column=3,sticky=N)
     lang_to_list = ttk.Combobox(root, width=5, textvariable=lang_to)
     lang_to_list['values'] = lang_from_list['values'][1:]
     lang_to_list.grid(row=0, column=4, sticky=N, ipadx=20)
     lang_to_list.set('中文-zh')
+    
     global from_text
-    from_text = ScrolledText(
-        root,
-        font=(
-            '微软雅黑',
-            11),
-        width=27,
-        height=7,
-        wrap=WORD)
+    from_text = ScrolledText(root, font=('微软雅黑', 11), width=27, height=7, wrap=WORD)
     from_text.grid(row=1, column=0, columnspan=3, rowspan=3, sticky=E)
     from_text.focus()
     global to_text
-    to_text = ScrolledText(
-        root,
-        font=(
-            '微软雅黑',
-            11),
-        width=27,
-        height=7,
-        wrap=WORD)
+    to_text = ScrolledText(root, font=('微软雅黑', 11), width=27, height=7, wrap=WORD)
     to_text.grid(row=1, column=3, columnspan=3, rowspan=3, sticky=E)
 
-    button = Button(
-        root,
-        font=(
-            '微软雅黑',
-            11),
-        width=2,
-        text='查询',
-        command=lambda: start())
+    button = Button(root, font=('微软雅黑', 11), width=2, text='查询', command=lambda: start())
     button.grid(row=5, column=4, ipadx=5)
-    clear_button = Button(
-        root,
-        font=(
-            '微软雅黑',
-            11),
-        width=2,
-        text='清屏',
-        command=lambda: clear())
+    clear_button = Button(root, font=('微软雅黑', 11), width=2, text='清屏', command=lambda: clear())
     clear_button.grid(row=5, column=3, ipadx=5)
 
-    en_to_zh = Button(
-        root,
-        font=(
-            '微软雅黑',
-            11),
-        width=2,
-        text='英译汉',
-        command=lambda: en2zh())
+    en_to_zh = Button(root, font=('微软雅黑', 11), width=2, text='英译汉', command=lambda: en2zh())
     en_to_zh.grid(row=5, column=0, ipadx=5)
 
-    zh_to_en = Button(
-        root,
-        font=(
-            '微软雅黑',
-            11),
-        width=2,
-        text='汉译英',
-        command=lambda: zh2en())
+    zh_to_en = Button(root, font=('微软雅黑', 11), width=2, text='汉译英', command=lambda: zh2en())
     zh_to_en.grid(row=5, column=1, ipadx=5)
     root.mainloop()
 
