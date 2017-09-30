@@ -8,7 +8,7 @@ import win32clipboard
 from Tkinter import *
 from ScrolledText import ScrolledText  # 滚动条
 try:
-    from tkinter import ttk
+    from tkinter import ttk	       # 兼容linux
 except ImportError:
     import ttk
 
