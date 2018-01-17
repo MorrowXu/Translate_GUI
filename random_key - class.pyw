@@ -122,7 +122,7 @@ class Gui(object):
 		win32clipboard.EmptyClipboard()
 		win32clipboard.SetClipboardData(win32clipboard.CF_TEXT, content)
 		win32clipboard.CloseClipboard()
-		if content: # conteng不为空就弹出复制成功
+		if content: # content不为空就弹出复制成功
 			import tkMessageBox # 导入tk消息盒子
 			tkMessageBox.showinfo( "", "已复制到剪贴板")
 
