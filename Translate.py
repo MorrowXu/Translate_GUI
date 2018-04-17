@@ -4,7 +4,7 @@
 import json
 import requests
 import random
-import md5
+import hashlib
 import threading
 from Tkinter import *
 from ScrolledText import ScrolledText
@@ -20,117 +20,118 @@ sys.setdefaultencoding('utf-8')
    Appid and secretkey have to apply in the Baidu translation API platform
 '''
 
+class TranslateGui(object):
 
-def connect_baiduapi():
-    url = ' http://api.fanyi.baidu.com/api/trans/vip/translate'
-    appid = 'your appid'  # 你申请的appid
-    secretKey = 'your secretKey'  # 百度api发给你的密钥
-    q = str(from_text.get('1.0', END)).strip()
-    fromlang = lang_from.get().split('-')[1]
-    tolang = lang_to.get().split('-')[1]
-    salt = random.randint(32768, 65536)
-    sign = appid + q + str(salt) + secretKey
-    m1 = md5.new()
-    m1.update(sign)
-    sign = m1.hexdigest()
-    params = {
-              'appid': appid, 
-              'q': q, 
-              'from': fromlang, 
-              'to': tolang,
-              'salt': str(salt), 
-              'sign': sign}
-    try:
-        r = requests.get(url, params)
-        r.raise_for_status()
-        r.encoding = r.apparent_encoding
-        content = json.loads(r.text)
-        if content['trans_result'][0]['dst']:
-            dst = content['trans_result'][0]['dst']
-            to_text.delete('1.0', END)
-            to_text.insert(END, dst)
-    except Exception as e:
-        to_text.insert(END, e)
+    def __init__(self):
+        self.url = ' http://api.fanyi.baidu.com/api/trans/vip/translate'
+        self.appid = '20170319000042596'  # 你申请的appid
+        self.secretKey = 'ngZhXsybngHjSvEd9L0r'  # 百度api发给你的密钥
 
-
-def translate_GUI():
-    root = Tk()
-    root.title('Easy_translate   Author:Morrow')
-    root.geometry('480x245+800+320')
-    
-    global lang_from
-    lang_from = StringVar()
-    Label(root, font=('微软雅黑', 11), text='选择语言:').grid(row=0, column=0,sticky=N)
-    lang_from_list = ttk.Combobox(root, width=5, textvariable=lang_from)
-    lang_from_list['values'] = ('自动检测-auto', '中文-zh', '英语-en', '粤语-yue',
-                                '文言文-wyw', '日语-jp','韩语-kor','法语-fra',
-                                '西班牙语-spa','泰语-th','阿拉伯语-ara','俄语-ru',
-                                '葡萄牙语-pt','德语-de','意大利语-it','希腊语-el',
-                                '荷兰语-nl','波兰语-pl','保加利亚语-bul','爱沙尼亚语-est',
-                                '丹麦语-dan','芬兰语-fin','捷克语-cs','罗马尼亚语-rom',
-                                '斯洛文尼亚语-slo','瑞典语-swe','匈牙利语-hu','繁体中文-cht',
-                                '越南语-vie')
-    lang_from_list.grid(row=0, column=1, sticky=N, ipadx=20)
-    lang_from_list.set('自动检测-auto')
-    
-    global lang_to
-    lang_to = StringVar()
-    Label(root,font=('微软雅黑', 11),text='译后语言:').grid(row=0,column=3,sticky=N)
-    lang_to_list = ttk.Combobox(root, width=5, textvariable=lang_to)
-    lang_to_list['values'] = lang_from_list['values'][1:]
-    lang_to_list.grid(row=0, column=4, sticky=N, ipadx=20)
-    lang_to_list.set('中文-zh')
-    
-    global from_text
-    from_text = ScrolledText(root, font=('微软雅黑', 11), width=27, height=7, wrap=WORD)
-    from_text.grid(row=1, column=0, columnspan=3, rowspan=3, sticky=E)
-    from_text.focus()
-    global to_text
-    to_text = ScrolledText(root, font=('微软雅黑', 11), width=27, height=7, wrap=WORD)
-    to_text.grid(row=1, column=3, columnspan=3, rowspan=3, sticky=E)
-
-    button = Button(root, font=('微软雅黑', 11), width=2, text='查询', command=lambda: start())
-    button.grid(row=5, column=4, ipadx=5)
-    clear_button = Button(root, font=('微软雅黑', 11), width=2, text='清屏', command=lambda: clear())
-    clear_button.grid(row=5, column=3, ipadx=5)
-
-    en_to_zh = Button(root, font=('微软雅黑', 11), width=2, text='英译汉', command=lambda: en2zh())
-    en_to_zh.grid(row=5, column=0, ipadx=5)
-
-    zh_to_en = Button(root, font=('微软雅黑', 11), width=2, text='汉译英', command=lambda: zh2en())
-    zh_to_en.grid(row=5, column=1, ipadx=5)
-    root.mainloop()
+    def connect_baiduapi(self):
+        q = str(self.from_text.get('1.0', END)).strip()
+        fromlang = self.lang_from.get().split('-')[1]
+        tolang = self.lang_to.get().split('-')[1]
+        salt = random.randint(32768, 65536)
+        sign = self.appid + q + str(salt) + self.secretKey
+        m1 = hashlib.md5()
+        m1.update(sign)
+        sign = m1.hexdigest()
+        params = {
+                  'appid': self.appid,
+                  'q': q,
+                  'from': fromlang,
+                  'to': tolang,
+                  'salt': str(salt),
+                  'sign': sign}
+        try:
+            r = requests.get(self.url, params)
+            r.raise_for_status()
+            r.encoding = r.apparent_encoding
+            content = json.loads(r.text)
+            if content['trans_result'][0]['dst']:
+                dst = content['trans_result'][0]['dst']
+                self.to_text.delete('1.0', END)
+                self.to_text.insert(END, dst)
+        except Exception as e:
+            self.to_text.insert(END, e)
 
 
-def en2zh():
-    lang_from.set('英语-en')
-    lang_to.set('中文-zh')
-    th = threading.Thread(target=connect_baiduapi)
-    th.start()
+    def translate_GUI(self):
+        root = Tk()
+        root.title('Easy_translate   Author:Morrow')
+        root.geometry('480x245+800+320')
+
+        self.lang_from = StringVar()
+        Label(root, font=('微软雅黑', 11), text='选择语言:').grid(row=0, column=0,sticky=N)
+        self.lang_from_list = ttk.Combobox(root, width=5, textvariable=self.lang_from)
+        self.lang_from_list['values'] = ('自动检测-auto', '中文-zh', '英语-en', '粤语-yue',
+                                    '文言文-wyw', '日语-jp','韩语-kor','法语-fra',
+                                    '西班牙语-spa','泰语-th','阿拉伯语-ara','俄语-ru',
+                                    '葡萄牙语-pt','德语-de','意大利语-it','希腊语-el',
+                                    '荷兰语-nl','波兰语-pl','保加利亚语-bul','爱沙尼亚语-est',
+                                    '丹麦语-dan','芬兰语-fin','捷克语-cs','罗马尼亚语-rom',
+                                    '斯洛文尼亚语-slo','瑞典语-swe','匈牙利语-hu','繁体中文-cht',
+                                    '越南语-vie')
+        self.lang_from_list.grid(row=0, column=1, sticky=N, ipadx=20)
+        self.lang_from_list.set('自动检测-auto')
+
+        self.lang_to = StringVar()
+        Label(root,font=('微软雅黑', 11),text='译后语言:').grid(row=0,column=3,sticky=N)
+        self.lang_to_list = ttk.Combobox(root, width=5, textvariable=self.lang_to)
+        self.lang_to_list['values'] = self.lang_from_list['values'][1:]
+        self.lang_to_list.grid(row=0, column=4, sticky=N, ipadx=20)
+        self.lang_to_list.set('中文-zh')
+
+        self.from_text = ScrolledText(root, font=('微软雅黑', 11), width=27, height=7, wrap=WORD)
+        self.from_text.grid(row=1, column=0, columnspan=3, rowspan=3, sticky=E)
+        self.from_text.focus()
+        
+        self.to_text = ScrolledText(root, font=('微软雅黑', 11), width=27, height=7, wrap=WORD)
+        self.to_text.grid(row=1, column=3, columnspan=3, rowspan=3, sticky=E)
+
+        button = Button(root, font=('微软雅黑', 11), width=2, text='查询', command=lambda: self.start())
+        button.grid(row=5, column=4, ipadx=5)
+        clear_button = Button(root, font=('微软雅黑', 11), width=2, text='清屏', command=lambda: self.clear())
+        clear_button.grid(row=5, column=3, ipadx=5)
+
+        en_to_zh = Button(root, font=('微软雅黑', 11), width=4, text='英译汉', command=lambda: self.en2zh())
+        en_to_zh.grid(row=5, column=0, ipadx=5)
+
+        zh_to_en = Button(root, font=('微软雅黑', 11), width=4, text='汉译英', command=lambda: self.zh2en())
+        zh_to_en.grid(row=5, column=1, ipadx=5)
+        root.mainloop()
 
 
-def zh2en():
-    lang_guess = str(from_text.get('1.0', END)).strip()
-    if lang_guess >= u'\u4e00' and lang_guess <= u'\u9fa5':
-        lang_from.set('中文-zh')
-        lang_to.set('英语-en')
-    else:
-        lang_from.set('自动检测-auto')
-        lang_to.set('英语-en')
-    th = threading.Thread(target=connect_baiduapi)
-    th.start()
+    def en2zh(self):
+        self.lang_from.set('英语-en')
+        self.lang_to.set('中文-zh')
+        th = threading.Thread(target=self.connect_baiduapi)
+        th.start()
 
 
-def clear():
-    from_text.delete('1.0', END)
-    to_text.delete('1.0', END)
-    lang_from.set('自动检测-auto')
+    def zh2en(self):
+        lang_guess = str(self.from_text.get('1.0', END)).strip()
+        if lang_guess >= u'\u4e00' and lang_guess <= u'\u9fa5':
+            self.lang_from.set('中文-zh')
+            self.lang_to.set('英语-en')
+        else:
+            self.lang_from.set('自动检测-auto')
+            self.lang_to.set('英语-en')
+        th = threading.Thread(target=self.connect_baiduapi)
+        th.start()
 
 
-def start():
-    th = threading.Thread(target=connect_baiduapi)
-    th.start()
+    def clear(self):
+        self.from_text.delete('1.0', END)
+        self.to_text.delete('1.0', END)
+        self.lang_from.set('自动检测-auto')
+
+
+    def start(self):
+        th = threading.Thread(target=self.connect_baiduapi)
+        th.start()
 
 
 if __name__ == '__main__':
-    translate_GUI()
+    f = TranslateGui()
+    f.translate_GUI()
