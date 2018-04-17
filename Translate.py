@@ -24,8 +24,8 @@ class TranslateGui(object):
 
     def __init__(self):
         self.url = ' http://api.fanyi.baidu.com/api/trans/vip/translate'
-        self.appid = '20170319000042596'  # 你申请的appid
-        self.secretKey = 'ngZhXsybngHjSvEd9L0r'  # 百度api发给你的密钥
+        self.appid = '-----'  # 你申请的appid
+        self.secretKey = '------'  # 百度api发给你的密钥
 
     def connect_baiduapi(self):
         q = str(self.from_text.get('1.0', END)).strip()
